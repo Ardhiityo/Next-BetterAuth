@@ -47,7 +47,6 @@ export default function Page() {
     if (res.error) {
       toast.error(res.error.message, { position: "top-center" });
     } else {
-      toast.success("SignIn Successfully", { position: "top-center" });
       router.push("/dashboard");
     }
     setLoading(false);

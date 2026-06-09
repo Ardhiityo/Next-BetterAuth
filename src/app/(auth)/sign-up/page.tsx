@@ -16,7 +16,6 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -39,7 +38,6 @@ const formSchema = z
   });
 
 export default function Page() {
-  const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const { handleSubmit, control } = useForm<z.infer<typeof formSchema>>({
@@ -54,12 +52,16 @@ export default function Page() {
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     setLoading(true);
-    const res = await signUp.email(data);
+    const res = await signUp.email({
+      ...data,
+      callbackURL: "/dashboard", // URL tujuan setelah verifikasi email berhasil!
+    });
     if (res.error) {
       toast.error(res.error.message, { position: "top-center" });
     } else {
-      toast.success("SignUp Successfully", { position: "top-center" });
-      router.push("/dashboard");
+      toast.success("SignUp Successfully! Check your email for verification.", {
+        position: "top-center",
+      });
     }
     setLoading(false);
   };
@@ -146,7 +148,7 @@ export default function Page() {
                     type="password"
                     id="passwordConfirmation"
                     aria-invalid={fieldState.invalid}
-                    placeholder="Your passwordConfirmation"
+                    placeholder="Your password confirmation"
                     autoComplete="off"
                   />
                   {fieldState.invalid && (
